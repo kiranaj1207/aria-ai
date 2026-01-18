@@ -269,18 +269,15 @@ def handle_reminders_api():
     reminders = aria.load_reminders()
     return jsonify({"reminders": reminders})
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     # Create reminders file if it doesn't exist
     if not os.path.exists('data/reminders.json'):
         with open('data/reminders.json', 'w') as f:
             json.dump([], f)
     
-    # Run the app
-    print("=" * 50)
-    print("🌙 ARIA Web Assistant Starting...")
-    print("=" * 50)
-    print("Access the app at: http://localhost:5000")
-    print("Press Ctrl+C to stop")
-    print("=" * 50)
-    
-    app.run(debug=True, host='0.0.0.0', port=5000)
+    # Run the app on Render-compatible port
+    app.run(
+        host="0.0.0.0",
+        port=int(os.environ.get("PORT", 10000)),
+        debug=False
+    )
