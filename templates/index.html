@@ -1,0 +1,498 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ARIA - Web Assistant</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #0D0221 0%, #1A0B2E 100%);
+            color: white;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: rgba(45, 27, 78, 0.95);
+            border-radius: 20px;
+            padding: 30px;
+            border: 2px solid #F72585;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.5);
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid #3D2B5F;
+        }
+        
+       .logo {
+    font-size: 48px;
+    font-weight: 800;
+    background: linear-gradient(45deg, #F72585, #FFD60A);
+    background-clip: text;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    color: transparent; /* Fallback for non-WebKit browsers */
+    display: inline-block;
+    margin-bottom: 10px;
+}
+        .subtitle {
+            color: #B8A9C9;
+            font-size: 18px;
+            margin-bottom: 5px;
+        }
+        
+        .status {
+            color: #06FFA5;
+            font-size: 14px;
+            font-weight: 500;
+        }
+        
+        .chat-container {
+            height: 500px;
+            overflow-y: auto;
+            background: rgba(37, 21, 73, 0.8);
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 25px;
+            border: 1px solid #3D2B5F;
+        }
+        
+        .message {
+            margin-bottom: 20px;
+            padding: 15px 20px;
+            border-radius: 15px;
+            max-width: 85%;
+            animation: fadeIn 0.3s ease;
+            line-height: 1.5;
+        }
+        
+        .user-message {
+            background: linear-gradient(135deg, #251549, #3D2B5F);
+            margin-left: auto;
+            border-left: 4px solid #F72585;
+        }
+        
+        .aria-message {
+            background: linear-gradient(135deg, #2D1B4E, #3D2B5F);
+            border-left: 4px solid #06FFA5;
+        }
+        
+        .message-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+        
+        .message-sender {
+            font-weight: 700;
+            color: #FFD60A;
+            font-size: 16px;
+        }
+        
+        .message-time {
+            color: #B8A9C9;
+            font-size: 12px;
+        }
+        
+        .message-content {
+            font-size: 15px;
+        }
+        
+        .input-area {
+            display: flex;
+            gap: 15px;
+            margin-top: 25px;
+        }
+        
+        #commandInput {
+            flex: 1;
+            padding: 18px;
+            background: rgba(37, 21, 73, 0.9);
+            border: 2px solid #F72585;
+            border-radius: 12px;
+            color: white;
+            font-size: 16px;
+            transition: all 0.3s;
+        }
+        
+        #commandInput:focus {
+            outline: none;
+            border-color: #06FFA5;
+            box-shadow: 0 0 0 3px rgba(6, 255, 165, 0.2);
+        }
+        
+        #sendButton {
+            background: linear-gradient(45deg, #F72585, #FFD60A);
+            color: #0D0221;
+            border: none;
+            padding: 18px 35px;
+            border-radius: 12px;
+            font-weight: 700;
+            cursor: pointer;
+            font-size: 16px;
+            transition: transform 0.2s;
+        }
+        
+        #sendButton:hover {
+            transform: translateY(-2px);
+        }
+        
+        .quick-buttons {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 12px;
+            margin-top: 25px;
+        }
+        
+        .quick-btn {
+            background: rgba(6, 255, 165, 0.1);
+            color: #06FFA5;
+            border: 1px solid #06FFA5;
+            padding: 14px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s;
+            text-align: center;
+            font-size: 14px;
+        }
+        
+        .quick-btn:hover {
+            background: #06FFA5;
+            color: #0D0221;
+            transform: translateY(-2px);
+        }
+        
+        .info-panel {
+            margin-top: 30px;
+            padding: 20px;
+            background: rgba(37, 21, 73, 0.8);
+            border-radius: 15px;
+            border: 1px solid #3D2B5F;
+        }
+        
+        .info-title {
+            color: #FFD60A;
+            font-size: 18px;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .info-content {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+        }
+        
+        .info-card {
+            background: rgba(45, 27, 78, 0.9);
+            padding: 15px;
+            border-radius: 10px;
+            border: 1px solid #3D2B5F;
+        }
+        
+        .card-title {
+            color: #F72585;
+            font-weight: 600;
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+        
+        .card-value {
+            color: white;
+            font-size: 16px;
+            font-weight: 500;
+        }
+        
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        /* Scrollbar styling */
+        .chat-container::-webkit-scrollbar {
+            width: 8px;
+        }
+        
+        .chat-container::-webkit-scrollbar-track {
+            background: rgba(37, 21, 73, 0.5);
+            border-radius: 4px;
+        }
+        
+        .chat-container::-webkit-scrollbar-thumb {
+            background: #F72585;
+            border-radius: 4px;
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            .container {
+                padding: 20px;
+            }
+            
+            .logo {
+                font-size: 36px;
+            }
+            
+            .chat-container {
+                height: 400px;
+                padding: 15px;
+            }
+            
+            .quick-buttons {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .input-area {
+                flex-direction: column;
+            }
+            
+            #sendButton {
+                width: 100%;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .quick-buttons {
+                grid-template-columns: 1fr;
+            }
+            
+            .logo {
+                font-size: 32px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="logo">🌙 ARIA</div>
+            <div class="subtitle">Premium AI Assistant - Web Version</div>
+            <div class="status">● Online & Ready</div>
+        </div>
+        
+        <div class="chat-container" id="chatContainer">
+            <!-- Messages will appear here -->
+        </div>
+        
+        <div class="quick-buttons">
+            <button class="quick-btn" onclick="sendCommand('What is the weather?')">
+                <span style="font-size: 18px;">🌤️</span> Weather
+            </button>
+            <button class="quick-btn" onclick="sendCommand('What are the latest news?')">
+                <span style="font-size: 18px;">📰</span> News
+            </button>
+            <button class="quick-btn" onclick="sendCommand('What time is it?')">
+                <span style="font-size: 18px;">⏰</span> Current Time
+            </button>
+            <button class="quick-btn" onclick="sendCommand('What is the date today?')">
+                <span style="font-size: 18px;">📅</span> Today's Date
+            </button>
+            <button class="quick-btn" onclick="sendCommand('Hello ARIA')">
+                <span style="font-size: 18px;">👋</span> Say Hello
+            </button>
+            <button class="quick-btn" onclick="sendCommand('Set reminder to call mom')">
+                <span style="font-size: 18px;">⏰</span> Set Reminder
+            </button>
+        </div>
+        
+        <div class="input-area">
+            <input type="text" id="commandInput" 
+                   placeholder="Type your command (e.g., 'weather in London', 'latest news', 'what time is it')..."
+                   onkeypress="if(event.key === 'Enter') sendCommand()">
+            <button id="sendButton" onclick="sendCommand()">Send Message</button>
+        </div>
+        
+        <div class="info-panel">
+            <div class="info-title">
+                <span>📊</span> Assistant Information
+            </div>
+            <div class="info-content">
+                <div class="info-card">
+                    <div class="card-title">Current City</div>
+                    <div class="card-value" id="currentCity">Bangalore</div>
+                </div>
+                <div class="info-card">
+                    <div class="card-title">Connection</div>
+                    <div class="card-value" id="connectionStatus">Connected ✓</div>
+                </div>
+                <div class="info-card">
+                    <div class="card-title">Messages</div>
+                    <div class="card-value" id="messageCount">0</div>
+                </div>
+                <div class="info-card">
+                    <div class="card-title">Last Active</div>
+                    <div class="card-value" id="lastActive">Just now</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Global variables
+        let messageCount = 0;
+        
+        // Add initial welcome message
+        document.addEventListener('DOMContentLoaded', function() {
+            addMessage('aria', "Welcome! I'm ARIA, your premium AI assistant. I'm here to help you with weather updates, latest news, reminders, time, date, and much more. How may I assist you today?");
+            updateMessageCount();
+            updateLastActive();
+        });
+        
+        // Send command to server
+        function sendCommand(customCommand = null) {
+            const input = document.getElementById('commandInput');
+            const command = customCommand || input.value.trim();
+            
+            if (!command) {
+                alert('Please enter a command!');
+                return;
+            }
+            
+            // Add user message to chat
+            addMessage('user', command);
+            
+            // Clear input
+            if (!customCommand) {
+                input.value = '';
+            }
+            
+            // Show loading indicator
+            const loadingId = addMessage('aria', 'Thinking...');
+            
+            // Send to server
+            fetch('/api/command', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    command: command
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                // Remove loading message
+                removeMessage(loadingId);
+                
+                // Add ARIA's response
+                addMessage('aria', data.response);
+                
+                // Update info panel
+                if (data.city) {
+                    document.getElementById('currentCity').textContent = data.city;
+                }
+                
+                updateMessageCount();
+                updateLastActive();
+            })
+            .catch(error => {
+                removeMessage(loadingId);
+                addMessage('aria', 'Sorry, I encountered an error. Please try again.');
+                console.error('Error:', error);
+            });
+        }
+        
+        // Add message to chat
+        function addMessage(sender, content) {
+            const chatContainer = document.getElementById('chatContainer');
+            const messageId = 'msg_' + Date.now();
+            
+            const messageDiv = document.createElement('div');
+            messageDiv.id = messageId;
+            messageDiv.className = `message ${sender}-message`;
+            
+            const now = new Date();
+            const timeString = now.getHours().toString().padStart(2, '0') + ':' + 
+                              now.getMinutes().toString().padStart(2, '0');
+            
+            messageDiv.innerHTML = `
+                <div class="message-header">
+                    <div class="message-sender">${sender === 'user' ? 'You' : 'ARIA'}</div>
+                    <div class="message-time">${timeString}</div>
+                </div>
+                <div class="message-content">${content}</div>
+            `;
+            
+            chatContainer.appendChild(messageDiv);
+            chatContainer.scrollTop = chatContainer.scrollHeight;
+            
+            messageCount++;
+            return messageId;
+        }
+        
+        // Remove message (for loading indicator)
+        function removeMessage(messageId) {
+            const element = document.getElementById(messageId);
+            if (element) {
+                element.remove();
+            }
+        }
+        
+        // Update message count
+        function updateMessageCount() {
+            document.getElementById('messageCount').textContent = messageCount;
+        }
+        
+        // Update last active time
+        function updateLastActive() {
+            const now = new Date();
+            const timeString = now.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+            document.getElementById('lastActive').textContent = timeString;
+        }
+        
+        // Keyboard shortcut
+        document.getElementById('commandInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                sendCommand();
+            }
+        });
+        
+        // Auto-focus input
+        setTimeout(() => {
+            document.getElementById('commandInput').focus();
+        }, 100);
+        
+        // Update connection status
+        function checkConnection() {
+            fetch('/api/health')
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById('connectionStatus').textContent = 
+                        data.status === 'online' ? 'Connected ✓' : 'Disconnected ✗';
+                    document.getElementById('connectionStatus').style.color = 
+                        data.status === 'online' ? '#06FFA5' : '#F72585';
+                })
+                .catch(() => {
+                    document.getElementById('connectionStatus').textContent = 'Disconnected ✗';
+                    document.getElementById('connectionStatus').style.color = '#F72585';
+                });
+        }
+        
+        // Check connection every 30 seconds
+        setInterval(checkConnection, 30000);
+        checkConnection(); // Initial check
+    </script>
+</body>
+</html>
